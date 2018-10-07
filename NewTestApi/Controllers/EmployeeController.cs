@@ -69,5 +69,45 @@ namespace NewTestApi.Controllers
             }
             return Ok();
         }
+
+        //Update Employee details
+        public IHttpActionResult Put(EmployeeViewModel employee)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Not valid");
+            }
+            using (var ctx = new EmployeesEntities())
+            {
+                var existingEmployee = ctx.Employees.Where(s => s.Id == employee.Id).FirstOrDefault();
+                if (existingEmployee!=null)
+                {
+                    existingEmployee.Name = employee.Name;
+                    existingEmployee.Age = employee.Age;
+                    existingEmployee.JoiningDate = employee.JoiningDate;
+                    ctx.SaveChanges();
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            return Ok();
+        }
+        //Delete an Employee
+             public IHttpActionResult Delete(int id)
+        {
+            if (id<0)
+            {
+                return BadRequest("Invalid employee Id");
+            }
+            using (var ctx = new EmployeesEntities())
+            {
+                var employee = ctx.Employees.Where(s => s.Id == id).FirstOrDefault();
+                ctx.Entry(employee).State = System.Data.Entity.EntityState.Deleted;
+                    ctx.SaveChanges();
+            }
+            return Ok();
+        }
     }
 }
